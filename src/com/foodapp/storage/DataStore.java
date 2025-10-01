@@ -1,0 +1,35 @@
+package com.foodapp.storage;
+import java.util.*;
+import com.foodapp.model.*;
+import com.foodapp.util.SerializationUtil;
+
+public class DataStore {
+    private static final String USERS = "data/users.dat";
+    private static final String RESTS = "data/restaurants.dat";
+    private static final String ORDERS = "data/orders.dat";
+
+    private static List<User> users = new ArrayList<>();
+    private static List<Restaurant> restaurants = new ArrayList<>();
+    private static List<Order> orders = new ArrayList<>();
+
+    static {
+        Object u = SerializationUtil.load(USERS);
+        if (u != null) users = (List<User>) u;
+        Object r = SerializationUtil.load(RESTS);
+        if (r != null) restaurants = (List<Restaurant>) r;
+        Object o = SerializationUtil.load(ORDERS);
+        if (o != null) orders = (List<Order>) o;
+    }
+
+    public static List<User> getUsers() { return users; }
+    public static List<Restaurant> getRestaurants() { return restaurants; }
+    public static List<Order> getOrders() { return orders; }
+
+    public static void addUser(User u) { users.add(u); SerializationUtil.save(users, USERS); }
+    public static void addRestaurant(Restaurant r) { restaurants.add(r); SerializationUtil.save(restaurants, RESTS); }
+    public static void addOrder(Order o) { orders.add(o); SerializationUtil.save(orders, ORDERS); }
+
+    public static User findUserByEmail(String email) { for (User u : users) if (u.getEmail() != null && u.getEmail().equals(email)) return u; return null; }
+    public static Restaurant findRestaurantById(int id) { for (Restaurant r : restaurants) if (r.getId() == id) return r; return null; }
+    public static Order findOrderById(int id) { for (Order o : orders) if (o.getId() == id) return o; return null; }
+}
