@@ -1,9 +1,8 @@
 package com.foodapp.storage;
-import java.util.*;
-
 import com.foodapp.exception.*;
 import com.foodapp.model.*;
 import com.foodapp.util.SerializationUtil;
+import java.util.*;
 
 public class DataStore {
     private static final String USERS = "data/users.dat";
@@ -37,4 +36,19 @@ public class DataStore {
         for (Restaurant r : restaurants) if (r.getId() == id) return r;
         throw new HotelNotFoundException("HotelNotFoundException: Restaurant/Hotel ID " + id + " not found"); }
     public static Order findOrderById(int id) throws OrderNotFoundException { for (Order o : orders) if (o.getId() == id) return o; throw new OrderNotFoundException("OrderNotFoundException: Order with ID " + id + " not found"); }
+    
+    private static final String FEEDBACKS = "data/feedbacks.dat";
+private static List<Feedback> feedbacks = new ArrayList<>();
+
+static {
+    Object f = SerializationUtil.load(FEEDBACKS);
+    if (f != null) feedbacks = (List<Feedback>) f;
+}
+
+public static List<Feedback> getFeedbacks() { return feedbacks; }
+public static void addFeedback(Feedback f) {
+    feedbacks.add(f);
+    SerializationUtil.save(feedbacks, FEEDBACKS);
+}
+
 }

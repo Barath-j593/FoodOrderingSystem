@@ -1,19 +1,18 @@
 package com.foodapp.app;
-import java.util.*;
-
 import com.foodapp.exception.HotelNotFoundException;
 import com.foodapp.exception.OrderNotFoundException;
 import com.foodapp.exception.WalletEmptyException;
 import com.foodapp.model.*;
 import com.foodapp.service.*;
 import com.foodapp.storage.DataStore;
-import com.foodapp.util.CryptoUtil;
+import java.util.*;
 
 public class Main {
     static Scanner sc = new Scanner(System.in);
     static UserService userService = new UserService();
     static OrderService orderService = new OrderService();
     static ReportService reportService = new ReportService();
+    static FeedbackService feedbackService = new FeedbackService();
 
     public static void main(String[] args) {
         new java.io.File("data").mkdirs();
@@ -79,10 +78,12 @@ public class Main {
             System.out.println("3. View Cart & Place Order");
             System.out.println("4. Make Payment");
             System.out.println("5. Track Delivery");
+            
             System.out.println("6. Logout");
+            System.out.println("7. Give Feedback"); 
             if (c instanceof PremiumUser) {
             
-                System.out.println("7. Add Money to Wallet");
+                System.out.println("8. Add Money to Wallet");
             }
             System.out.print("Choice: ");
             String ch = sc.nextLine();
@@ -238,11 +239,16 @@ public class Main {
                     System.out.println("All orders are delivered /not placed any orders yet.");
                 }
             } else if(ch.equals("6")) break;
-            else if(ch.equals("7") && c instanceof PremiumUser){
+            else if(ch.equals("8") && c instanceof PremiumUser){
                 System.out.print("Amount to add: ");
                 double amt = Double.parseDouble(sc.nextLine());
                 ((PremiumUser)c).addToWallet(amt);
                 System.out.println("Added to wallet. New balance: " + ((PremiumUser)c).getWallet());
+            }
+             else if(ch.equals("7")){
+                System.out.print("Enter your feedback: ");
+                String msg = sc.nextLine();
+                feedbackService.giveFeedback(c, msg);   // ✅ Added feedback
             }
         }
     }
@@ -254,7 +260,8 @@ public class Main {
             System.out.println("2. Add Menu Item");
             System.out.println("3. Generate Report");
             System.out.println("4. View All Orders");
-            System.out.println("5. Logout");
+            System.out.println("5. Show Feedback");
+            System.out.println("6. Logout");
             System.out.print("Choice: ");
             String ch = sc.nextLine();
             if(ch.equals("1")){
@@ -284,7 +291,10 @@ public class Main {
                 reportService.generateSummary(); System.out.println("Report generated at reports/summary.txt");
             } else if(ch.equals("4")){
                 for(Order o: DataStore.getOrders()) System.out.println(o);
-            } else if(ch.equals("5")) break;
+            } else if(ch.equals("6")) break;
+            else if(ch.equals("5")){
+                feedbackService.showAllFeedbacks();   // ✅ Admin sees feedback
+            }
         }
     }
 
