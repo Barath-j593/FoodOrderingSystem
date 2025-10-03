@@ -27,7 +27,8 @@ public class DataStore {
 
     public static void addUser(User u) { users.add(u); SerializationUtil.save(users, USERS); }
     public static void addRestaurant(Restaurant r) { restaurants.add(r); SerializationUtil.save(restaurants, RESTS); }
-    public static void addOrder(Order o) { orders.add(o); SerializationUtil.save(orders, ORDERS); }
+    public static void addOrder(Order o) { orders.removeIf(existing -> existing.getId() == o.getId()); orders.add(o); SerializationUtil.save(orders, ORDERS); }
+
 
     public static User findUserByEmail(String email) { for (User u : users) if (u.getEmail() != null && u.getEmail().equals(email)) return u; return null; }
     public static Restaurant findRestaurantById(int id) { for (Restaurant r : restaurants) if (r.getId() == id) return r; return null; }

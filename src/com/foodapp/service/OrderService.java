@@ -19,6 +19,7 @@ public class OrderService {
                 ((DeliveryStaff)u).assignOrder(o.getId());
                 o.assignDelivery(u.getId());
                 DataStore.addOrder(o);
+                DataStore.addUser(u);
                 break;
             }
         }

@@ -25,6 +25,7 @@ public class Order implements Serializable {
     public void setStatus(String s) { status = s; }
     public void assignDelivery(int staffId) { this.deliveryStaffId = staffId; this.status = "OUT_FOR_DELIVERY"; }
     public Integer getDeliveryStaffId() { return deliveryStaffId; }
-
+    public List<CartItem> getItems() { return items; }
+    
     @Override public String toString() { return "Order#" + id + " cust=" + customerId + " total=" + total + " status=" + status; }
 }

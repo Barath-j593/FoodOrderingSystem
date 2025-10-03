@@ -6,6 +6,6 @@ public class DeliveryStaff extends User {
     public DeliveryStaff() { super(); }
     public DeliveryStaff(int id, String name, String email, String passwordEncoded) { super(id,name,email,passwordEncoded); }
     @Override public String getRole() { return "Delivery"; }
-    public void assignOrder(int id) { assigned.add(id); }
+    public void assignOrder(int id) { if (!assigned.contains(id)) assigned.add(id); }
     public List<Integer> getAssigned() { return assigned; }
 }

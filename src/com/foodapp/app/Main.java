@@ -28,7 +28,7 @@ public class Main {
             if(ch.equals("1")) customerEntry();
             else if(ch.equals("2")) adminEntry();
             else if(ch.equals("3")) deliveryEntry();
-            else if(ch.equals("4")) { System.out.println("Bye"); break; }
+            else if(ch.equals("4")) { System.out.println("Exiting the System. Thank You!"); break; }
         }
     }
 
@@ -41,10 +41,14 @@ public class Main {
             User u = userService.login(e,p);
             if(u instanceof Customer) customerMenu((Customer)u); else System.out.println("Invalid credentials or not a customer");
         } else if(c.equals("2")){
+            System.out.println("Register as:\n1. Normal User\n2. Premium User");
+            String type = sc.nextLine();
             System.out.print("Name: "); String n=sc.nextLine();
             System.out.print("Email: "); String e=sc.nextLine();
             System.out.print("Password: "); String p=sc.nextLine();
-            userService.registerCustomer(n,e,p); System.out.println("Registered. Login now.");
+            if(type.equals("1")) userService.registerNormalUser(n,e,p);
+            else if(type.equals("2")) userService.registerPremiumUser(n,e,p);
+            System.out.println("Registered. You can login now :)!.");
         }
     }
 
@@ -72,6 +76,10 @@ public class Main {
             System.out.println("4. Make Payment");
             System.out.println("5. Track Delivery");
             System.out.println("6. Logout");
+            if (c instanceof PremiumUser) {
+            
+                System.out.println("7. Add Money to Wallet");
+            }
             System.out.print("Choice: ");
             String ch = sc.nextLine();
             if(ch.equals("1")){
@@ -99,16 +107,87 @@ public class Main {
             } else if(ch.equals("4")){
                 Order target = null;
                 for(Order o: DataStore.getOrders()){
-                    if(o.getCustomerId()==c.getId() && o.getStatus().equals("PENDING")) target = o;
+                    if(o.getCustomerId() == c.getId() && o.getStatus().equals("PENDING")) {
+                        target = o;
+                        break;
+                    }
                 }
-                if(target==null){ System.out.println("No pending orders to pay"); continue; }
-                System.out.println("Amount to pay: "+target.getTotal());
-                System.out.println("1. Cash  2. Card  3. Wallet");
+                if(target == null){
+                    System.out.println("No pending orders to pay");
+                    continue;
+                }
+
+                double total = target.getTotal();  
+                int qty = 0;
+                for (CartItem ci : target.getItems()) {
+                    qty += ci.getQty();
+                }
+                if (c instanceof PremiumUser) {
+                    total = ((PremiumUser) c).applyDiscount(total, qty);
+                    System.out.println("Discount applied! Amount to pay: " + total);
+                } else {
+                    System.out.println("Amount to pay: " + total);
+                }
+
+                if (c instanceof PremiumUser) { System.out.println("1. Cash  2. Card  3. Wallet");} else { System.out.println("1. Cash  2. Card");}
+                
                 String pay = sc.nextLine();
+
                 try{
-                    if(pay.equals("1")){ new com.foodapp.model.CashPayment().processPayment(target.getTotal()); target.setStatus("PAID"); }
-                    else if(pay.equals("2")){ System.out.print("Enter card number: "); String cn = sc.nextLine(); new com.foodapp.model.CardPayment(cn).processPayment(target.getTotal()); target.setStatus("PAID"); }
-                    else if(pay.equals("3")){ new com.foodapp.model.WalletPayment(c).processPayment(target.getTotal()); target.setStatus("PAID"); }
+                    if(pay.equals("1")){ 
+                        System.out.println("Processing...");
+                        try {
+                            Thread.sleep(2000); 
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        new com.foodapp.model.CashPayment().processPayment(target.getTotal());
+                        target.setStatus("PAID");
+                    
+                        try {
+                            Thread.sleep(1500); 
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        orderService.assignDelivery(target);
+                        System.out.println("Order is out for delivery."); 
+                    }
+
+                    else if(pay.equals("2")){ 
+                        System.out.print("Enter card number: ");
+                        String cn = sc.nextLine();
+                        System.out.println("Processing your card payment...");
+                        try {
+                            Thread.sleep(2000);  
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        new com.foodapp.model.CardPayment(cn).processPayment(target.getTotal()); // May throw error if card invalid
+                        target.setStatus("PAID");
+                        System.out.println("Payment successful....");
+
+                        try {
+                            Thread.sleep(1500);  
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        orderService.assignDelivery(target);
+                        System.out.println("Order is out for delivery.");
+                    }
+                    
+                    else if(pay.equals("3") && c instanceof PremiumUser){
+                        new com.foodapp.model.WalletPayment((PremiumUser)c).processPayment(target.getTotal());
+                        target.setStatus("PAID");
+                        DataStore.addOrder(target);
+                        System.out.println("Payment successful.");
+                        orderService.assignDelivery(target);
+                        System.out.println("Order is out for delivery.");
+                    }
+                    
                     else { System.out.println("Invalid payment method"); continue; }
                     DataStore.addOrder(target);
                     System.out.println("Payment successful.");
@@ -116,11 +195,26 @@ public class Main {
                     System.out.println("Order is out for delivery.");
                 } catch(Exception ex){ System.out.println("Payment failed: "+ex.getMessage()); }
             } else if(ch.equals("5")){
+                Set<Integer> shown = new HashSet<>();
+                boolean hasOrders = false;
                 for(Integer oid: c.getOrderIds()){
+                    if (!shown.add(oid)) continue;
                     Order o = DataStore.findOrderById(oid);
-                    if(o!=null) System.out.println(o + (o.getDeliveryStaffId()!=null ? (" | Delivery by: "+o.getDeliveryStaffId()) : ""));
+                    if(o != null) {
+                        hasOrders = true;
+                        System.out.println(o + (o.getDeliveryStaffId() != null ? (" | Delivery by: " + o.getDeliveryStaffId()) : ""));
+                    }
+                }
+                if (!hasOrders) {
+                    System.out.println("All orders are delivered /not placed any orders yet.");
                 }
             } else if(ch.equals("6")) break;
+            else if(ch.equals("7") && c instanceof PremiumUser){
+                System.out.print("Amount to add: ");
+                double amt = Double.parseDouble(sc.nextLine());
+                ((PremiumUser)c).addToWallet(amt);
+                System.out.println("Added to wallet. New balance: " + ((PremiumUser)c).getWallet());
+            }
         }
     }
 
@@ -167,7 +261,19 @@ public class Main {
             System.out.print("Choice: ");
             String ch = sc.nextLine();
             if(ch.equals("1")){
-                for(Integer id: d.getAssigned()){ Order o = DataStore.findOrderById(id); if(o!=null) System.out.println(o); }
+                boolean found = false;
+                Set<Integer> shown = new HashSet<>();
+                for(Integer id: d.getAssigned()) { 
+                    if (!shown.add(id)) continue;
+                    Order o = DataStore.findOrderById(id); 
+                    if(o != null) {
+                        found = true;
+                        System.out.println(o);
+                    }
+                }
+                if (!found) {
+                    System.out.println("You have no assigned orders at the moment.");
+                }
             } else if(ch.equals("2")){
                 System.out.print("Order id: "); int oid = Integer.parseInt(sc.nextLine());
                 Order o = DataStore.findOrderById(oid); if(o==null){ System.out.println("No such order"); continue; }
@@ -178,7 +284,8 @@ public class Main {
 
     private static void seedSampleData(){
         if(DataStore.getUsers().isEmpty()){
-            userService.registerCustomer("cust1","cust1@example.com","pass1");
+            userService.registerNormalUser("cust1","cust1@example.com","pass1");
+            userService.registerPremiumUser("prem1","prem1@example.com","prem123");
             userService.registerAdmin("admin","admin@example.com","admin123");
             userService.registerDelivery("del1","del1@example.com","del123");
         }

@@ -3,13 +3,21 @@ import com.foodapp.storage.DataStore;
 import com.foodapp.model.*;
 import com.foodapp.util.CryptoUtil;
 public class UserService {
-    public User registerCustomer(String name, String email, String password){
+    public User registerNormalUser(String name, String email, String password) {
         int id = DataStore.getUsers().size() + 1;
         String enc = CryptoUtil.encode(password);
-        Customer c = new Customer(id, name, email, enc, 100); // give some wallet balance
-        DataStore.addUser(c);
-        return c;
+        NormalUser u = new NormalUser(id, name, email, enc);
+        DataStore.addUser(u);
+        return u;
     }
+    public User registerPremiumUser(String name, String email, String password) {
+        int id = DataStore.getUsers().size() + 1;
+        String enc = CryptoUtil.encode(password);
+        PremiumUser u = new PremiumUser(id, name, email, enc, 0.0); // wallet starts at zero
+        DataStore.addUser(u);
+        return u;
+    }
+
     public User registerAdmin(String name, String email, String password){
         int id = DataStore.getUsers().size() + 1;
         Admin a = new Admin(id, name, email, CryptoUtil.encode(password));
