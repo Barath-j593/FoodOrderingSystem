@@ -1,5 +1,7 @@
 package com.foodapp.storage;
 import java.util.*;
+
+import com.foodapp.exception.*;
 import com.foodapp.model.*;
 import com.foodapp.util.SerializationUtil;
 
@@ -31,6 +33,8 @@ public class DataStore {
 
 
     public static User findUserByEmail(String email) { for (User u : users) if (u.getEmail() != null && u.getEmail().equals(email)) return u; return null; }
-    public static Restaurant findRestaurantById(int id) { for (Restaurant r : restaurants) if (r.getId() == id) return r; return null; }
-    public static Order findOrderById(int id) { for (Order o : orders) if (o.getId() == id) return o; return null; }
+    public static Restaurant findRestaurantById(int id) throws HotelNotFoundException { 
+        for (Restaurant r : restaurants) if (r.getId() == id) return r;
+        throw new HotelNotFoundException("HotelNotFoundException: Restaurant/Hotel ID " + id + " not found"); }
+    public static Order findOrderById(int id) throws OrderNotFoundException { for (Order o : orders) if (o.getId() == id) return o; throw new OrderNotFoundException("OrderNotFoundException: Order with ID " + id + " not found"); }
 }

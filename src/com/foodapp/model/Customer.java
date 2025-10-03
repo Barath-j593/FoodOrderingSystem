@@ -1,6 +1,8 @@
 package com.foodapp.model;
+
 import java.util.ArrayList;
 import java.util.List;
+import com.foodapp.exception.InsufficientBalanceException;
 
 public class Customer extends User {
     private double wallet;
@@ -17,8 +19,8 @@ public class Customer extends User {
 
     public double getWallet() { return wallet; }
     public void addToWallet(double amt) { if(amt<=0) throw new IllegalArgumentException("Amount > 0"); wallet += amt; }
-    public void deductFromWallet(double amt) throws com.foodapp.exception.InsufficientBalanceException {
-        if(amt > wallet) throw new com.foodapp.exception.InsufficientBalanceException("Insufficient wallet balance");
+    public void deductFromWallet(double amt) throws InsufficientBalanceException {
+        if(amt > wallet) throw new InsufficientBalanceException("Insufficient wallet balance");
         wallet -= amt;
     }
 

@@ -1,5 +1,9 @@
 package com.foodapp.app;
 import java.util.*;
+
+import com.foodapp.exception.HotelNotFoundException;
+import com.foodapp.exception.OrderNotFoundException;
+import com.foodapp.exception.WalletEmptyException;
 import com.foodapp.model.*;
 import com.foodapp.service.*;
 import com.foodapp.storage.DataStore;
@@ -86,23 +90,37 @@ public class Main {
                 for(Restaurant r: DataStore.getRestaurants()) System.out.println(r);
             } else if(ch.equals("2")){
                 System.out.print("Enter restaurant id: "); int rid = Integer.parseInt(sc.nextLine());
-                Restaurant r = DataStore.findRestaurantById(rid); if(r==null){ System.out.println("No such restaurant"); continue; }
-                System.out.println("Menu:");
-                for(MenuItem mi: r.getMenu()) System.out.println(mi);
-                System.out.print("Enter menu id: "); int mid = Integer.parseInt(sc.nextLine());
-                MenuItem mi = r.findById(mid);
-                if(mi==null){ System.out.println("Invalid menu id"); continue; }
-                System.out.print("Qty: "); int q = Integer.parseInt(sc.nextLine());
-                cart.add(mi, q);
-                System.out.println("Added to cart");
+                try {
+                    Restaurant r = DataStore.findRestaurantById(rid); 
+                    System.out.println("Menu:");
+                    for(MenuItem mi: r.getMenu()) System.out.println(mi);
+                    System.out.print("Enter menu id: "); int mid = Integer.parseInt(sc.nextLine());
+                    MenuItem mi = r.findById(mid);
+                    if(mi==null){ System.out.println("Invalid menu id"); continue; }
+                    System.out.print("Qty: "); int q = Integer.parseInt(sc.nextLine());
+                    cart.add(mi, q);
+                    System.out.println("Added to cart"); 
+                } catch (HotelNotFoundException x) {
+                    System.out.println(x);
+                    continue;  
+                }
+                
             } else if(ch.equals("3")){
                 System.out.println(cart);
                 System.out.print("Place order? (y/n): ");
                 if(sc.nextLine().equalsIgnoreCase("y")){
                     System.out.print("Enter restaurant id for this order: "); int rid = Integer.parseInt(sc.nextLine());
-                    Restaurant r = DataStore.findRestaurantById(rid); if(r==null){ System.out.println("Invalid restaurant"); continue; }
-                    Order o = orderService.createOrder(c, r, cart);
-                    if(o==null) System.out.println("Cart empty, cannot place order"); else System.out.println("Placed: "+o);
+                    try { 
+                        Restaurant r = DataStore.findRestaurantById(rid);  
+                        Order o = orderService.createOrder(c, r, cart);
+                        if(o==null) System.out.println("Cart empty, cannot place order"); else System.out.println("Placed: "+o);
+                    } catch (HotelNotFoundException e) {
+                        System.out.println(e);
+                        continue;  
+                    }
+
+                    
+                    
                 }
             } else if(ch.equals("4")){
                 Order target = null;
@@ -140,9 +158,10 @@ public class Main {
                             Thread.sleep(2000); 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
+                            
                         }
 
-                        new com.foodapp.model.CashPayment().processPayment(target.getTotal());
+                        new  CashPayment().processPayment(target.getTotal());
                         target.setStatus("PAID");
                     
                         try {
@@ -165,7 +184,7 @@ public class Main {
                             e.printStackTrace();
                         }
 
-                        new com.foodapp.model.CardPayment(cn).processPayment(target.getTotal()); // May throw error if card invalid
+                        new CardPayment(cn).processPayment(target.getTotal()); // May throw error if card invalid
                         target.setStatus("PAID");
                         System.out.println("Payment successful....");
 
@@ -180,12 +199,18 @@ public class Main {
                     }
                     
                     else if(pay.equals("3") && c instanceof PremiumUser){
-                        new com.foodapp.model.WalletPayment((PremiumUser)c).processPayment(target.getTotal());
-                        target.setStatus("PAID");
-                        DataStore.addOrder(target);
-                        System.out.println("Payment successful.");
-                        orderService.assignDelivery(target);
-                        System.out.println("Order is out for delivery.");
+                        try {
+                            new  WalletPayment((PremiumUser)c).processPayment(target.getTotal());
+                            target.setStatus("PAID");
+                            DataStore.addOrder(target);
+                            System.out.println("Payment successful.");
+                            orderService.assignDelivery(target);
+                            System.out.println("Order is out for delivery.");
+                        } catch (WalletEmptyException e) {
+                            System.out.println(e);
+                            continue;
+                        }
+                        
                     }
                     
                     else { System.out.println("Invalid payment method"); continue; }
@@ -193,17 +218,21 @@ public class Main {
                     System.out.println("Payment successful.");
                     orderService.assignDelivery(target);
                     System.out.println("Order is out for delivery.");
-                } catch(Exception ex){ System.out.println("Payment failed: "+ex.getMessage()); }
+                } catch(Exception e){ System.out.println("Payment failed: "+e.getMessage()); }
             } else if(ch.equals("5")){
                 Set<Integer> shown = new HashSet<>();
                 boolean hasOrders = false;
                 for(Integer oid: c.getOrderIds()){
                     if (!shown.add(oid)) continue;
-                    Order o = DataStore.findOrderById(oid);
-                    if(o != null) {
+                    try {
+                        Order o = DataStore.findOrderById(oid);
                         hasOrders = true;
                         System.out.println(o + (o.getDeliveryStaffId() != null ? (" | Delivery by: " + o.getDeliveryStaffId()) : ""));
+                    
+                    } catch (OrderNotFoundException e) {
+                        System.out.println(e);
                     }
+                    
                 }
                 if (!hasOrders) {
                     System.out.println("All orders are delivered /not placed any orders yet.");
@@ -237,13 +266,20 @@ public class Main {
                 System.out.println("Added restaurant.");
             } else if(ch.equals("2")){
                 System.out.print("Restaurant id: "); int rid = Integer.parseInt(sc.nextLine());
-                Restaurant r = DataStore.findRestaurantById(rid); if(r==null){ System.out.println("No such restaurant"); continue; }
-                System.out.print("Menu id: "); int mid = Integer.parseInt(sc.nextLine());
-                System.out.print("Name: "); String mn = sc.nextLine();
-                System.out.print("Desc: "); String md = sc.nextLine();
-                System.out.print("Price: "); double pr = Double.parseDouble(sc.nextLine());
-                r.addMenuItem(new MenuItem(mid, mn, md, pr));
-                System.out.println("Menu item added.");
+                try {
+                    Restaurant r = DataStore.findRestaurantById(rid);
+                    System.out.print("Menu id: "); int mid = Integer.parseInt(sc.nextLine());
+                    System.out.print("Name: "); String mn = sc.nextLine();
+                    System.out.print("Desc: "); String md = sc.nextLine();
+                    System.out.print("Price: "); double pr = Double.parseDouble(sc.nextLine());
+                    r.addMenuItem(new MenuItem(mid, mn, md, pr));
+                    System.out.println("Menu item added.");
+                } catch (HotelNotFoundException e) {
+                    System.out.println(e);
+                    continue;  
+                }
+
+                
             } else if(ch.equals("3")){
                 reportService.generateSummary(); System.out.println("Report generated at reports/summary.txt");
             } else if(ch.equals("4")){
@@ -265,19 +301,29 @@ public class Main {
                 Set<Integer> shown = new HashSet<>();
                 for(Integer id: d.getAssigned()) { 
                     if (!shown.add(id)) continue;
-                    Order o = DataStore.findOrderById(id); 
-                    if(o != null) {
+                    try {
+                        Order o = DataStore.findOrderById(id);
                         found = true;
                         System.out.println(o);
+                    } catch (OrderNotFoundException x) {
+                        System.out.println(x);
                     }
+                                      
+                     
                 }
                 if (!found) {
                     System.out.println("You have no assigned orders at the moment.");
                 }
             } else if(ch.equals("2")){
                 System.out.print("Order id: "); int oid = Integer.parseInt(sc.nextLine());
-                Order o = DataStore.findOrderById(oid); if(o==null){ System.out.println("No such order"); continue; }
-                o.setStatus("DELIVERED"); DataStore.addOrder(o); System.out.println("Marked delivered.");
+                try{
+                    Order o = DataStore.findOrderById(oid);
+                    o.setStatus("DELIVERED"); DataStore.addOrder(o); System.out.println("Marked delivered.");
+                }
+                catch (OrderNotFoundException e) {
+                    System.out.println(e);
+                }
+
             } else if(ch.equals("3")) break;
         }
     }

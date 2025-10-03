@@ -1,14 +1,19 @@
 package com.foodapp.model;
+
+import com.foodapp.storage.DataStore;
 import java.io.Serializable;
 import java.util.List;
 public class Order implements Serializable {
     private int id;
     private int customerId;
+    private String name;
     private int restaurantId;
     private List<CartItem> items;
     private double total;
     private String status;
     private Integer deliveryStaffId;
+
+    
 
     public Order() {}
 
@@ -27,5 +32,17 @@ public class Order implements Serializable {
     public Integer getDeliveryStaffId() { return deliveryStaffId; }
     public List<CartItem> getItems() { return items; }
     
-    @Override public String toString() { return "Order#" + id + " cust=" + customerId + " total=" + total + " status=" + status; }
+    @Override public String toString() { 
+        try {
+            for (User u : DataStore.getUsers()) {
+                if (u.getId() == customerId) {
+                    name = u.getName();
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            name="";
+        }
+        return "Order#" + id + " cust=" + customerId + "name=" + name + " total=" + total + " status=" + status; 
+    }
 }
