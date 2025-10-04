@@ -43,6 +43,6 @@ public class Order implements Serializable {
         } catch (Exception e) {
             name="";
         }
-        return "Order#" + id + " cust=" + customerId + "name=" + name + " total=" + total + " status=" + status; 
+        return "Order#" + id + " cust=" + customerId + " name=" + name + " total=" + total + " status=" + status; 
     }
 }

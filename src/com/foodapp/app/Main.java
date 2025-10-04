@@ -78,9 +78,9 @@ public class Main {
             System.out.println("3. View Cart & Place Order");
             System.out.println("4. Make Payment");
             System.out.println("5. Track Delivery");
+            System.out.println("6. Give Feedback"); 
+            System.out.println("7. Logout");
             
-            System.out.println("6. Logout");
-            System.out.println("7. Give Feedback"); 
             if (c instanceof PremiumUser) {
             
                 System.out.println("8. Add Money to Wallet");
@@ -201,10 +201,11 @@ public class Main {
                     
                     else if(pay.equals("3") && c instanceof PremiumUser){
                         try {
-                            new  WalletPayment((PremiumUser)c).processPayment(target.getTotal());
+                            new  WalletPayment((PremiumUser)c).processPayment(total);
                             target.setStatus("PAID");
                             DataStore.addOrder(target);
                             System.out.println("Payment successful.");
+                            System.out.println("Remaining wallet balance: " + c.getWallet());
                             orderService.assignDelivery(target);
                             System.out.println("Order is out for delivery.");
                         } catch (WalletEmptyException e) {
@@ -238,14 +239,14 @@ public class Main {
                 if (!hasOrders) {
                     System.out.println("All orders are delivered /not placed any orders yet.");
                 }
-            } else if(ch.equals("6")) break;
+            } else if(ch.equals("7")) break;
             else if(ch.equals("8") && c instanceof PremiumUser){
                 System.out.print("Amount to add: ");
                 double amt = Double.parseDouble(sc.nextLine());
                 ((PremiumUser)c).addToWallet(amt);
                 System.out.println("Added to wallet. New balance: " + ((PremiumUser)c).getWallet());
             }
-             else if(ch.equals("7")){
+             else if(ch.equals("6")){
                 System.out.print("Enter your feedback: ");
                 String msg = sc.nextLine();
                 feedbackService.giveFeedback(c, msg);   // ✅ Added feedback
