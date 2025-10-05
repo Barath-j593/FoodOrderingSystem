@@ -7,3 +7,5 @@ Order#1 cust=1 total=240.0 status=PENDING
 Order#1 cust=7 total=480.0 status=PENDING
 Order#1 cust=1name=cust1 total=320.0 status=PENDING
 Order#1 cust=7name=Bala total=250.0 status=PENDING
+Order#1 cust=19 name=GokulRam total=160.0 status=PENDING
+Order#2 cust=23 name=Bala total=350.0 status=PENDING
