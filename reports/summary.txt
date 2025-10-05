@@ -1,3 +1,3 @@
-Total restaurants: 3
-Total users: 25
+Total restaurants: 4
+Total users: 27
 Total orders: 2

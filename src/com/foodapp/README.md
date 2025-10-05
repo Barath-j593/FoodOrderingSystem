@@ -1,4 +1,17 @@
-# 🍔 FoodOrderAndTrackingSystem (Java Console Application)
+# FoodOrderAndTrackingSystem (Java Console Application)
+
+
+## 📘 Overview
+
+The **FoodOrderAndTrackingSystem** is a Java-based console application that allows users to browse restaurants, order food, make payments, and track deliveries.  
+It’s designed using **Object-Oriented Programming (OOP)** concepts and includes three roles — **Customer**, **Admin**, and **Delivery Staff** — each with specific privileges and menus.
+
+This project demonstrates:
+- Application of **Encapsulation, Inheritance, Polymorphism, and Abstraction**
+- Use of **custom exceptions** and **file handling**
+- **Report generation** and **persistent data management**
+
+---
 
 ## ⚙️ Initial Setup & Execution
 
@@ -12,18 +25,87 @@ javac -d out $files
 # Step 2: Run the main application
 java -cp out com.foodapp.app.Main
 ```
-
 ---
 
-## 📘 Overview
+## 🧩 Object-Oriented Concepts Used
 
-The **FoodOrderAndTrackingSystem** is a Java-based console application that allows users to browse restaurants, order food, make payments, and track deliveries.  
-It’s designed using **Object-Oriented Programming (OOP)** concepts and includes three roles — **Customer**, **Admin**, and **Delivery Staff** — each with specific privileges and menus.
+1. Classes & Objects
+- Many real world entities such as User, Cart, Restaurant, PaymentMethod, OrderService, etc. are created in the project
+- Each Classes created has their respective attributes and methods. (E.g. id, name, cuisine and addMenuItem in Restaurant, name, email and getName, getEmail in User).
+- Creation of Objects in the project (main program).
+```bash
+static UserService userService = new UserService();
+static OrderService orderService = new OrderService();
+```
 
-This project demonstrates:
-- Application of **Encapsulation, Inheritance, Polymorphism, and Abstraction**
-- Use of **custom exceptions** and **file handling**
-- **Report generation** and **persistent data management**
+2. Encapsulation
+- Private fields in classes like User, Customer, CartItem, etc.
+- Use of getter/setter methods to control access. (getName, setEmail, getOrderById, etc)
+- Use of Validations in Setter. (email format in User, CardNumber format in CardPayment, etc.)
+
+3. Inheritance
+- User inherited by Admin, Customer and DeliveryStaff.
+- Payment inherited by CashPayment, CardPayment, and WalletPayment.
+- Implemented Method overriding for getRole in subclasses of User, processPayment in subclasses of Payment and several other methods.
+- Use of “super” keyword in constructors.
+
+4. Polymorphism
+- Compile Time Polymorphism exhibited by Constructor overloading (multiple constructors)
+- Run Time Polymorphism exhibited by method overriding.
+- Dynamic method dispatch exhibited by PaymentMethod along with its subclass.
+- Use of parent references: PaymentMethod is used for Cash/Card/WalletPayment.
+
+5. Abstraction
+- Use of abstract class User, PaymentMethod.
+- Contains abstract methods getRole, processPayment.
+- Defines a common behavior without exposing implementation details which will be overridden by their subclasses.
+
+6. Constructors
+- Use of default constructors in Box, Pair, CartItem.
+- Use of parameterized Constructors in User, Order.
+- Constructor overloading in User and several classes.
+- Constructor chaining using super in PaymentMethod.
+
+7. Access Modifiers
+- Use of private access specifier to fields of class.  
+E.g. private String passwordEncoded
+- Use of public access specifiers to attributes of class.  
+E.g. public int getId()
+- Use of protected access specifiers to attributes of class.  
+E.g. protected int id
+- Use of default access specifiers.  
+E.g. static Object u – in Datastore.java
+
+8. Packages
+- Organized Project Directory with user-defined packages.
+- Imported and used classes from different packages.
+- Refer "Project File Structure" given below.
+
+9. Exception Handling
+- Use of custom as well as default exceptions. (InsufficientBalanceExceptions, OrderNotFoundExceptions, etc.)
+- Use of try-catch-finally block to handle them.
+- try-catch blocks throughout main program and service classes.
+
+10. Generics
+- Use of generics in Pair<K,V> and implicitly in Collections.
+- Bounded generics used in Box<T extends Number>
+- E.g. public static <T> void printData(T data){ … }.
+
+11. Collections Framework
+- ArrayList in Cart, Customer, etc, HashSet for tracking IDs
+- Use of iterators and enhanced for loops in main program and various service classes. 
+- Operations like searching/filtering done on lists in main program and various service classes.
+```bash
+for(Order o: DataStore.getOrders()) System.out.println(o);
+for (CartItem ci : target.getItems()) qty += ci.getQty();
+
+orders.removeIf(existing -> existing.getId() == o.getId());
+```
+
+12. File Handling
+- Use of FileHandling operations to read and write data of users, orders and restaurants using serialization.
+- Data’s stored in file can retrieved again after restarting of system thus maintaining continuity.
+
 
 ---
 
@@ -93,14 +175,6 @@ View Assigned Orders → Update Delivery Status
 
 ---
 
-
-
-## 🧩 Object-Oriented Concepts Used
-
-
-
----
-
 ## 🧾 Project File Structure
 
 ```
@@ -151,9 +225,6 @@ src/
 └── Pair.java
 ```
 
-
-
-
 ---
 
 ## 🧾 Report Generation
@@ -173,8 +244,6 @@ reports/summary.txt
 
 ---
 
-
-
 ## 🧮 Modules Split-Up
 
 | Module | Description |
@@ -187,8 +256,6 @@ reports/summary.txt
 | **Delivery Management** | Delivery staff can update delivery statuses |
 
 ---
-
-
 
 ## 🧩 Scope and Limitations
 
