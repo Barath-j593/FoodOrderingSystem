@@ -249,7 +249,7 @@ public class Main {
              else if(ch.equals("6")){
                 System.out.print("Enter your feedback: ");
                 String msg = sc.nextLine();
-                feedbackService.giveFeedback(c, msg);   // ✅ Added feedback
+                feedbackService.giveFeedback(c, msg);   //  Added feedback
             }
         }
     }
@@ -289,12 +289,12 @@ public class Main {
 
                 
             } else if(ch.equals("3")){
-                reportService.generateSummary(); System.out.println("Report generated at reports/summary.txt");
+                reportService.generateSummary(); ReportService.generateOrderReport(); System.out.println("Report generated at reports/summary.txt and reports/orders.txt");
             } else if(ch.equals("4")){
                 for(Order o: DataStore.getOrders()) System.out.println(o);
             } else if(ch.equals("6")) break;
             else if(ch.equals("5")){
-                feedbackService.showAllFeedbacks();   // ✅ Admin sees feedback
+                feedbackService.showAllFeedbacks();   // Admin sees feedback
             }
         }
     }

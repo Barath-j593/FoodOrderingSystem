@@ -1,5 +1,7 @@
 package com.foodapp.model;
 import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 public class Report {
@@ -14,4 +16,18 @@ public class Report {
             pw.println("Report generated");
         } catch (IOException e) { e.printStackTrace(); }
     }
+    public static void generateOrderReport() {
+        try (
+            BufferedReader br = new BufferedReader(new FileReader("order.dat"));
+            PrintWriter pw = new PrintWriter(new FileWriter("reports/orders.txt", true)) // append mode
+        ) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                pw.println(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

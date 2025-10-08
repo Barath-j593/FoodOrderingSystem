@@ -32,4 +32,14 @@ public class ReportService {
             e.printStackTrace();
         }
     }
+    public static void generateOrderReport() {
+        try (PrintWriter pw = new PrintWriter(new FileWriter("reports/orders.txt"))) {
+            for (Order order : DataStore.getOrders()) {
+                pw.println(order); // or format as needed
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

@@ -9,7 +9,7 @@ public class OrderService {
         Order o = new Order(NEXT++, c.getId(), r.getId(), new ArrayList<>(cart.getItems()));
         DataStore.addOrder(o);
         c.addOrderId(o.getId());
-        Report.appendOrder(o.toString());
+        //Report.appendOrder(o.toString());
         cart.clear();
         return o;
     }
