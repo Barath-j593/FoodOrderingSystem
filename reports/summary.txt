@@ -1,3 +1,6 @@
-Total restaurants: 4
-Total users: 27
-Total orders: 2
+===== System Summary Report =====
+Total Restaurants: 4
+Total Users: 29
+Total Orders: 2
+Total Revenue: ₹450.0
+=================================

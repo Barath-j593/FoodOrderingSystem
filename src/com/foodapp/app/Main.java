@@ -95,9 +95,28 @@ public class Main {
                     Restaurant r = DataStore.findRestaurantById(rid); 
                     System.out.println("Menu:");
                     for(MenuItem mi: r.getMenu()) System.out.println(mi);
-                    System.out.print("Enter menu id: "); int mid = Integer.parseInt(sc.nextLine());
-                    MenuItem mi = r.findById(mid);
-                    if(mi==null){ System.out.println("Invalid menu id"); continue; }
+                   System.out.println("Search Menu by: 1. ID  2. Name");
+                String opt = sc.nextLine();
+                MenuItem mi = null;
+
+                if (opt.equals("1")) {
+                    System.out.print("Enter menu id: ");
+                    int mid = Integer.parseInt(sc.nextLine());
+                    mi = r.findById(mid);
+                } else if (opt.equals("2")) {
+                    System.out.print("Enter menu name: ");
+                    String name = sc.nextLine();
+                    mi = r.findById(name);  // overloaded method
+                } else {
+                    System.out.println("Invalid option");
+                    continue;
+                }
+
+                if (mi == null) {
+                    System.out.println("Menu item not found");
+                    continue;
+                }
+
                     System.out.print("Qty: "); int q = Integer.parseInt(sc.nextLine());
                     cart.add(mi, q);
                     System.out.println("Added to cart"); 

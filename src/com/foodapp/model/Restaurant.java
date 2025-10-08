@@ -29,6 +29,13 @@ public class Restaurant implements Serializable {
         return null;
     }
 
+    public MenuItem findById(String name) {
+    for (MenuItem m : items)
+        if (m.getName().equalsIgnoreCase(name))
+            return m;
+    return null;
+}
+
     @Override public String toString() {
         return id + ": " + name + " (" + cuisine + ")";
     }
