@@ -74,7 +74,7 @@ E.g. public int getId()
 - Use of protected access specifiers to attributes of class.  
 E.g. protected int id
 - Use of default access specifiers.  
-E.g. static Object u – in Datastore.java
+E.g. static Object f – in Datastore.java
 
 8. Packages
 - Organized Project Directory with user-defined packages.

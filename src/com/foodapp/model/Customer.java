@@ -1,8 +1,8 @@
 package com.foodapp.model;
 
+import com.foodapp.exception.InsufficientBalanceException;
 import java.util.ArrayList;
 import java.util.List;
-import com.foodapp.exception.InsufficientBalanceException;
 
 public class Customer extends User {
     private double wallet;
