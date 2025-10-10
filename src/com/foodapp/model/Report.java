@@ -1,9 +1,9 @@
 package com.foodapp.model;
-import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 public class Report {
     public static <T> void printData(T data) { System.out.println(data); }
     public static void appendOrder(String line) {
@@ -29,5 +29,6 @@ public class Report {
             e.printStackTrace();
         }
     }
+    
 
 }

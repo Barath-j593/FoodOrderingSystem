@@ -2,7 +2,7 @@ package com.foodapp.service;
 import com.foodapp.model.*;
 import com.foodapp.storage.DataStore;
 import java.util.*;
-public class OrderService {
+public class OrderService implements Records{
 
     private static int NEXT;
     static {
@@ -17,6 +17,8 @@ public class OrderService {
             NEXT = 1;
         }
     }
+
+    
     
     public Order createOrder(Customer c, Restaurant r, Cart cart){
         if (cart.getItems().isEmpty()) return null;
@@ -31,11 +33,37 @@ public class OrderService {
         for (User u : DataStore.getUsers()){
             if (u instanceof DeliveryStaff){
                 ((DeliveryStaff)u).assignOrder(o.getId());
-                o.assignDelivery(u.getId());
+                o.assignDelivery((DeliveryStaff) u);
                 DataStore.addOrder(o);
                 DataStore.addUser(u);
                 break;
             }
         }
+    }
+
+    public void displayDetails() {
+        List<Order> orders = DataStore.getOrders();
+
+        if (orders == null || orders.isEmpty()) {
+            System.out.println("\nNo orders found in the system.\n");
+            return;
+        }
+
+        System.out.println("\n===== All Orders =====");
+        for (Order o : orders) {
+            System.out.print("Order ID: " + o.getId());
+            System.out.print(" | Customer ID: " + o.getCustomerId());
+            System.out.print(" | Restaurant ID: " + o.getRestaurantId());
+            System.out.print(" | Total: Rs." + o.getTotal());
+            System.out.print(" | Status: " + o.getStatus());
+            if (o.getDeliveryStaff() != null) {
+                System.out.print(" | Delivery Staff: " + o.getDeliveryStaff().getName());
+            } else {
+                System.out.print(" | Delivery Staff: [Unassigned]");
+            }
+
+
+        }
+        System.out.println("\n======================================\n");
     }
 }

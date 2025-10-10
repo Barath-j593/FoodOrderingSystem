@@ -1,2 +1,0 @@
-Order#1 | CustomerID=1 | Name=cust1 | Restaurant=Burger House | Total=360.0 | Status=DELIVERED
-Order#2 | CustomerID=1 | Name=cust1 | Restaurant=Pizza Palace | Total=900.0 | Status=DELIVERED

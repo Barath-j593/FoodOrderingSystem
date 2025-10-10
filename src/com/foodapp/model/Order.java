@@ -14,6 +14,9 @@ public class Order implements Serializable {
     private double total;
     private String status;
     private Integer deliveryStaffId;
+    private String deliveryStaffName;
+    User delUser;
+
 
     // Default constructor
     public Order() {}
@@ -27,6 +30,8 @@ public class Order implements Serializable {
         this.total = calc();
         this.status = "PENDING";
         this.deliveryStaffId = null;
+        this.deliveryStaffName = null;
+        this.delUser = null;
     }
 
     // Calculate total amount of order
@@ -44,14 +49,20 @@ public class Order implements Serializable {
     public double getTotal() { return total; }
     public String getStatus() { return status; }
     public void setStatus(String s) { status = s; }
-    public void assignDelivery(int staffId) {
-        this.deliveryStaffId = staffId;
+    public void assignDelivery(DeliveryStaff staff) {
+        this.delUser = staff;                  // store the object reference
+        this.deliveryStaffId = staff.getId();  // optional: keep the ID
+        this.deliveryStaffName = staff.getName();
         this.status = "OUT_FOR_DELIVERY";
     }
+
     public Integer getDeliveryStaffId() { return deliveryStaffId; }
     public List<CartItem> getItems() { return items; }
+    
+    public User getDeliveryStaff() {
+        return delUser;
+    }
 
-   
     public String getRestaurantName() {
         try {
             return DataStore.findRestaurantById(this.restaurantId).getName();
@@ -78,6 +89,7 @@ public class Order implements Serializable {
                " | Name=" + name +
                " | Restaurant=" + getRestaurantName() +
                " | Total=" + total +
-               " | Status=" + status;
+               " | Status=" + status +
+               " | Delivery Staff=" + delUser;
     }
 }

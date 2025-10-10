@@ -1,11 +1,11 @@
 ===== System Summary Report =====
 Total Restaurants: 3
-Total Users: 39
-Total Orders: 2
-Total Revenue: ₹1260.0
-=================================
+Total Users: 6
+Total Orders: 0
+Total Revenue: Rs.0.0
+---------------------------------
 
 --- Revenue by Restaurant ---
-Pizza Palace: ₹900.0
-Burger House: ₹360.0
+---------------------------------
+Average Revenue per Restaurant: Rs.0.0
 =================================

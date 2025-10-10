@@ -309,9 +309,9 @@ public class Main {
 
                 
             } else if(ch.equals("3")){
-                reportService.generateSummary(); ReportService.generateOrderReport(); System.out.println("Report generated at reports/summary.txt and reports/orders.txt");
+                reportService.generateSummary(); ReportService.generateOrderReport();reportService.displayDetails(); System.out.println("Report generated at reports/summary.txt and reports/orders.txt");
             } else if(ch.equals("4")){
-                for(Order o: DataStore.getOrders()) System.out.println(o);
+                orderService.displayDetails();  // Admin sees all orders
             } else if(ch.equals("6")) break;
             else if(ch.equals("5")){
                 feedbackService.showAllFeedbacks();   // Admin sees feedback
