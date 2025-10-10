@@ -1,7 +1,2 @@
-<<<<<<< Updated upstream
-Order#2 cust=23 name=Bala total=350.0 status=DELIVERED
-Order#1 cust=19 name=GokulRam total=240.0 status=OUT_FOR_DELIVERY
-=======
-Order#1 cust=1 name=cust1 total=100.0 status=PENDING
-Order#1 cust=1 name=cust1 total=500.0 status=PENDING
->>>>>>> Stashed changes
+Order#1 | CustomerID=1 | Name=cust1 | Restaurant=Burger House | Total=360.0 | Status=DELIVERED
+Order#2 | CustomerID=1 | Name=cust1 | Restaurant=Pizza Palace | Total=900.0 | Status=DELIVERED

@@ -71,6 +71,7 @@ public class Main {
 
     private static void customerMenu(Customer c){
         Cart cart = new Cart();
+        int rid=0;
         while(true){
             System.out.println("----- Customer Menu ("+c.getName()+") -----");
             System.out.println("1. View Restaurants");
@@ -90,7 +91,7 @@ public class Main {
             if(ch.equals("1")){
                 for(Restaurant r: DataStore.getRestaurants()) System.out.println(r);
             } else if(ch.equals("2")){
-                System.out.print("Enter restaurant id: "); int rid = Integer.parseInt(sc.nextLine());
+                System.out.print("Enter restaurant id: "); rid = Integer.parseInt(sc.nextLine());
                 try {
                     Restaurant r = DataStore.findRestaurantById(rid); 
                     System.out.println("Menu:");
@@ -129,7 +130,7 @@ public class Main {
                 System.out.println(cart);
                 System.out.print("Place order? (y/n): ");
                 if(sc.nextLine().equalsIgnoreCase("y")){
-                    System.out.print("Enter restaurant id for this order: "); int rid = Integer.parseInt(sc.nextLine());
+                    //System.out.print("Enter restaurant id for this order: "); int rid = Integer.parseInt(sc.nextLine());
                     try { 
                         Restaurant r = DataStore.findRestaurantById(rid);  
                         Order o = orderService.createOrder(c, r, cart);
@@ -329,18 +330,18 @@ public class Main {
             if(ch.equals("1")){
                 boolean found = false;
                 Set<Integer> shown = new HashSet<>();
-                for(Integer id: d.getAssigned()) { 
-                    if (!shown.add(id)) continue;
+                for (Integer id : new HashSet<>(d.getAssigned())) {
                     try {
                         Order o = DataStore.findOrderById(id);
                         found = true;
                         System.out.println(o);
                     } catch (OrderNotFoundException x) {
-                        System.out.println(x);
+                        
+                        d.getAssigned().remove(id);
+                        
                     }
-                                      
-                     
                 }
+
                 if (!found) {
                     System.out.println("You have no assigned orders at the moment.");
                 }
