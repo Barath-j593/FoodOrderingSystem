@@ -25,5 +25,5 @@ public abstract class User implements Serializable {
 
     public boolean checkPassword(String encoded) { return passwordEncoded != null && passwordEncoded.equals(encoded); }
 
-    public abstract String getRole();
+    public String getRole() { return "User"; }
 }
