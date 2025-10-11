@@ -1,11 +1,12 @@
 ===== System Summary Report =====
 Total Restaurants: 3
-Total Users: 6
-Total Orders: 0
+Total Users: 8
+Total Orders: 1
 Total Revenue: Rs.0.0
 ---------------------------------
 
 --- Revenue by Restaurant ---
 ---------------------------------
 Average Revenue per Restaurant: Rs.0.0
+Average Orders per Restaurant: 0.0
 =================================

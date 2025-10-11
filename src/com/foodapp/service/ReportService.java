@@ -40,19 +40,33 @@ public class ReportService implements Records, Serializable {
             int totalOrders = DataStore.getOrders().size();
 
             double totalRevenue = 0.0;
+
+            // Maps for revenue and order counts per restaurant
             Map<String, Double> restaurantRevenue = new HashMap<>();
+            Map<String, Integer> restaurantOrderCount = new HashMap<>();
 
             for (Order o : DataStore.getOrders()) {
                 if (o.getStatus().equalsIgnoreCase("PAID") || o.getStatus().equalsIgnoreCase("DELIVERED")) {
                     totalRevenue += o.getTotal();
+
                     String restaurantName = o.getRestaurantName();
+
+                    // Update revenue
                     restaurantRevenue.put(restaurantName,
                             restaurantRevenue.getOrDefault(restaurantName, 0.0) + o.getTotal());
+
+                    // Update order count
+                    restaurantOrderCount.put(restaurantName,
+                            restaurantOrderCount.getOrDefault(restaurantName, 0) + 1);
                 }
             }
 
-            AnalyticsService<Double> analytics = new AnalyticsService<>();
-            double avgRevenue = analytics.calculateAverage(new ArrayList<>(restaurantRevenue.values()));
+            // Generic analytics
+            AnalyticsService<Double> revenueAnalytics = new AnalyticsService<>();
+            AnalyticsService<Integer> orderAnalytics = new AnalyticsService<>();
+
+            double avgRevenue = revenueAnalytics.calculateAverage(new ArrayList<>(restaurantRevenue.values()));
+            double avgOrdersPerRestaurant = orderAnalytics.calculateAverage(new ArrayList<>(restaurantOrderCount.values()));
 
             pw.println("===== System Summary Report =====");
             pw.println("Total Restaurants: " + totalRestaurants);
@@ -60,16 +74,19 @@ public class ReportService implements Records, Serializable {
             pw.println("Total Orders: " + totalOrders);
             pw.println("Total Revenue: Rs." + totalRevenue);
             pw.println("---------------------------------");
+
             pw.println("\n--- Revenue by Restaurant ---");
             for (Map.Entry<String, Double> entry : restaurantRevenue.entrySet()) {
                 Pair<String, Double> pair = new Pair<>(entry.getKey(), entry.getValue());
                 pw.println(pair.getKey() + ": Rs." + pair.getValue());
             }
+
             pw.println("---------------------------------");
             pw.println("Average Revenue per Restaurant: Rs." + avgRevenue);
+            pw.println("Average Orders per Restaurant: " + avgOrdersPerRestaurant);
             pw.println("=================================");
 
-            System.out.println("Report file generated successfully!");
+            System.out.println(" Report file generated successfully with average orders per restaurant!");
         } catch (Exception e) {
             e.printStackTrace();
         }
