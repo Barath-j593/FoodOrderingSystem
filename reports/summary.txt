@@ -5,7 +5,10 @@ Total Orders: 1
 Total Revenue: Rs.0.0
 ---------------------------------
 
---- Revenue by Restaurant ---
+--- Revenue & Orders by Restaurant ---
+hifastfood -> Orders: 0, Revenue: Rs.0.0
+Pizza Palace -> Orders: 0, Revenue: Rs.0.0
+Burger House -> Orders: 0, Revenue: Rs.0.0
 ---------------------------------
 Average Revenue per Restaurant: Rs.0.0
 Average Orders per Restaurant: 0.0

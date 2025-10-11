@@ -2,7 +2,6 @@ package com.foodapp.service;
 
 import com.foodapp.model.Order;
 import com.foodapp.storage.DataStore;
-import com.foodapp.util.Pair;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,64 +32,73 @@ public class ReportService implements Records, Serializable {
         }
     }
 
-    public void generateSummary() {
-        try (PrintWriter pw = new PrintWriter(new FileWriter("reports/summary.txt"))) {
-            int totalRestaurants = DataStore.getRestaurants().size();
-            int totalUsers = DataStore.getUsers().size();
-            int totalOrders = DataStore.getOrders().size();
+public void generateSummary() {
+    try (PrintWriter pw = new PrintWriter(new FileWriter("reports/summary.txt"))) {
+        int totalRestaurants = DataStore.getRestaurants().size();
+        int totalUsers = DataStore.getUsers().size();
+        int totalOrders = DataStore.getOrders().size();
 
-            double totalRevenue = 0.0;
+        double totalRevenue = 0.0;
 
-            // Maps for revenue and order counts per restaurant
-            Map<String, Double> restaurantRevenue = new HashMap<>();
-            Map<String, Integer> restaurantOrderCount = new HashMap<>();
+        // Maps for revenue and order counts per restaurant
+        Map<String, Double> restaurantRevenue = new HashMap<>();
+        Map<String, Integer> restaurantOrderCount = new HashMap<>();
 
-            for (Order o : DataStore.getOrders()) {
-                if (o.getStatus().equalsIgnoreCase("PAID") || o.getStatus().equalsIgnoreCase("DELIVERED")) {
-                    totalRevenue += o.getTotal();
+        //  Initialize all restaurants with 0 revenue and 0 orders
+        DataStore.getRestaurants().forEach(r -> {
+            restaurantRevenue.put(r.getName(), 0.0);
+            restaurantOrderCount.put(r.getName(), 0);
+        });
 
-                    String restaurantName = o.getRestaurantName();
+        // Update revenue and order counts only for placed orders
+        for (Order o : DataStore.getOrders()) {
+            if (o.getStatus().equalsIgnoreCase("PAID") || o.getStatus().equalsIgnoreCase("DELIVERED")) {
+                totalRevenue += o.getTotal();
 
-                    // Update revenue
-                    restaurantRevenue.put(restaurantName,
-                            restaurantRevenue.getOrDefault(restaurantName, 0.0) + o.getTotal());
+                String restaurantName = o.getRestaurantName();
 
-                    // Update order count
-                    restaurantOrderCount.put(restaurantName,
-                            restaurantOrderCount.getOrDefault(restaurantName, 0) + 1);
-                }
+                // Update revenue
+                restaurantRevenue.put(restaurantName,
+                        restaurantRevenue.getOrDefault(restaurantName, 0.0) + o.getTotal());
+
+                // Update order count
+                restaurantOrderCount.put(restaurantName,
+                        restaurantOrderCount.getOrDefault(restaurantName, 0) + 1);
             }
-
-            // Generic analytics
-            AnalyticsService<Double> revenueAnalytics = new AnalyticsService<>();
-            AnalyticsService<Integer> orderAnalytics = new AnalyticsService<>();
-
-            double avgRevenue = revenueAnalytics.calculateAverage(new ArrayList<>(restaurantRevenue.values()));
-            double avgOrdersPerRestaurant = orderAnalytics.calculateAverage(new ArrayList<>(restaurantOrderCount.values()));
-
-            pw.println("===== System Summary Report =====");
-            pw.println("Total Restaurants: " + totalRestaurants);
-            pw.println("Total Users: " + totalUsers);
-            pw.println("Total Orders: " + totalOrders);
-            pw.println("Total Revenue: Rs." + totalRevenue);
-            pw.println("---------------------------------");
-
-            pw.println("\n--- Revenue by Restaurant ---");
-            for (Map.Entry<String, Double> entry : restaurantRevenue.entrySet()) {
-                Pair<String, Double> pair = new Pair<>(entry.getKey(), entry.getValue());
-                pw.println(pair.getKey() + ": Rs." + pair.getValue());
-            }
-
-            pw.println("---------------------------------");
-            pw.println("Average Revenue per Restaurant: Rs." + avgRevenue);
-            pw.println("Average Orders per Restaurant: " + avgOrdersPerRestaurant);
-            pw.println("=================================");
-
-            System.out.println(" Report file generated successfully with average orders per restaurant!");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        // Generic analytics for revenue and orders
+        AnalyticsService<Double> revenueAnalytics = new AnalyticsService<>();
+        AnalyticsService<Integer> orderAnalytics = new AnalyticsService<>();
+
+        double avgRevenue = revenueAnalytics.calculateAverage(new ArrayList<>(restaurantRevenue.values()));
+        double avgOrdersPerRestaurant = orderAnalytics.calculateAverage(new ArrayList<>(restaurantOrderCount.values()));
+
+        pw.println("===== System Summary Report =====");
+        pw.println("Total Restaurants: " + totalRestaurants);
+        pw.println("Total Users: " + totalUsers);
+        pw.println("Total Orders: " + totalOrders);
+        pw.println("Total Revenue: Rs." + totalRevenue);
+        pw.println("---------------------------------");
+
+        pw.println("\n--- Revenue & Orders by Restaurant ---");
+        for (String restaurant : restaurantRevenue.keySet()) {
+            double revenue = restaurantRevenue.get(restaurant);
+            int orderCount = restaurantOrderCount.get(restaurant);
+            pw.println(restaurant + " -> Orders: " + orderCount + ", Revenue: Rs." + revenue);
+        }
+
+        pw.println("---------------------------------");
+        pw.println("Average Revenue per Restaurant: Rs." + avgRevenue);
+        pw.println("Average Orders per Restaurant: " + avgOrdersPerRestaurant);
+        pw.println("=================================");
+
+        System.out.println("Report file generated successfully with ALL restaurants included!");
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+
 
     public static void generateOrderReport() {
         try (PrintWriter pw = new PrintWriter(new FileWriter("reports/orders.txt"))) {
